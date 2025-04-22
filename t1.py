@@ -7,6 +7,8 @@ import os
 from datetime import datetime
 import seaborn as sns
 import matplotlib.pyplot as plt
+import base64
+import io
 
 # 페이지 설정
 st.set_page_config(
@@ -19,19 +21,26 @@ st.set_page_config(
 if 'submissions' not in st.session_state:
     st.session_state.submissions = []
 
-# 정답 데이터 로드 (예시)
+# 정답 데이터 로드
 def load_ground_truth():
     try:
-        ground_truth = pd.read_csv('true.csv')
+        # Streamlit Secrets에서 정답 데이터 로드
+        if 'ground_truth_data' not in st.secrets:
+            st.error("정답 데이터가 설정되지 않았습니다.")
+            return None
+            
+        # Base64로 인코딩된 데이터를 디코딩
+        decoded_data = base64.b64decode(st.secrets['ground_truth_data'])
+        
+        # CSV 데이터를 DataFrame으로 변환
+        ground_truth = pd.read_csv(io.StringIO(decoded_data.decode('utf-8')))
+        
         if 'target' not in ground_truth.columns:
             st.error("정답 파일에 'target' 컬럼이 필요합니다.")
             return None
         return ground_truth
-    except FileNotFoundError:
-        st.error("정답 파일(true.csv)을 찾을 수 없습니다.")
-        return None
     except Exception as e:
-        st.error(f"정답 파일 로드 중 오류 발생: {str(e)}")
+        st.error(f"정답 데이터 로드 중 오류 발생: {str(e)}")
         return None
 
 # 제출 파일 검증
