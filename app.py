@@ -22,7 +22,7 @@ if __name__ == '__main__':
 
 # 페이지 설정
 st.set_page_config(
-    page_title="데이터 분석 경진대회 리더보드",
+    page_title="빅데이터 분석 리더보드",
     page_icon="📊",
     layout="wide"
 )
