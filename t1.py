@@ -17,10 +17,6 @@ st.set_page_config(
     layout="wide"
 )
 
-# 세션 상태 초기화
-if 'submissions' not in st.session_state:
-    st.session_state.submissions = []
-
 # 정답 데이터 로드
 def load_ground_truth():
     try:
@@ -57,6 +53,19 @@ def validate_submission(file):
 def calculate_score(predictions, ground_truth):
     return np.sqrt(np.mean((ground_truth['target'] - predictions['prediction'])**2))
 
+# CSV 파일에서 리더보드 데이터 읽기
+def load_leaderboard():
+    if not os.path.exists('res.csv'):
+        return pd.DataFrame(columns=['team_name', 'score', 'timestamp'])
+    return pd.read_csv('res.csv')
+
+# CSV 파일에 제출 결과 저장
+def save_submission(submission):
+    df = load_leaderboard()
+    new_row = pd.DataFrame([submission])
+    df = pd.concat([df, new_row], ignore_index=True)
+    df.to_csv('res.csv', index=False)
+
 # 메인 UI
 st.title("📊 데이터 분석 경진대회 리더보드")
 
@@ -83,46 +92,45 @@ with st.sidebar:
                     'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 }
                 
-                st.session_state.submissions.append(submission)
-                st.success(f"제출 완료! F1 점수: {score:.4f}")
+                save_submission(submission)
+                st.success(f"제출 완료! 점수: {score:.4f}")
             else:
                 st.error(result)
 
 # 메인 영역 - 리더보드
 st.header("리더보드")
 
-if st.session_state.submissions:
-    # 점수 기준으로 정렬
-    sorted_submissions = sorted(
-        st.session_state.submissions,
-        key=lambda x: x['score'],
-        reverse=True
-    )
+# res.csv에서 데이터 읽기
+df_leaderboard = load_leaderboard()
+
+if not df_leaderboard.empty:
+    # 점수 기준으로 오름차순 정렬
+    df_leaderboard = df_leaderboard.sort_values('score', ascending=True)
     
-    # 리더보드 표시
-    leaderboard_data = []
-    for idx, submission in enumerate(sorted_submissions, 1):
-        leaderboard_data.append({
-            '순위': idx,
-            '팀명': submission['team_name'],
-            'F1 점수': f"{submission['score']:.4f}",
-            '제출 시간': submission['timestamp']
-        })
+    # 순위 추가
+    df_leaderboard['순위'] = range(1, len(df_leaderboard) + 1)
     
-    df_leaderboard = pd.DataFrame(leaderboard_data)
-    st.dataframe(df_leaderboard, use_container_width=True)
+    # 컬럼 이름 변경 및 재정렬
+    df_display = df_leaderboard.rename(columns={
+        'team_name': '팀명',
+        'score': '점수',
+        'timestamp': '제출 시간'
+    })[['순위', '팀명', '점수', '제출 시간']]
+    
+    # 점수를 소수점 4자리까지 표시
+    df_display['점수'] = df_display['점수'].apply(lambda x: f"{x:.4f}")
+    
+    st.dataframe(df_display, use_container_width=True)
     
     # 차트로 시각화
     st.subheader("점수 분포")
-    scores = [s['score'] for s in sorted_submissions]
+    scores = df_leaderboard['score'].values
     
-    # 가우시안 분포 그래프 생성
     fig, ax = plt.subplots(figsize=(8, 1))
     sns.kdeplot(data=scores, ax=ax)
     ax.set_xlabel('Distribution')
     ax.set_ylabel('Density')
     
-    # Streamlit에 플롯 표시
     st.pyplot(fig)
 else:
     st.info("아직 제출된 결과가 없습니다.")
