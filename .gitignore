@@ -35,5 +35,4 @@ ENV/
 .DS_Store
 Thumbs.db
 
-# Data files
-true.csv 
+# Data files 

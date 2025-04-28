@@ -55,7 +55,7 @@ def validate_submission(file):
 
 # F1 점수 계산
 def calculate_score(predictions, ground_truth):
-    return f1_score(ground_truth['target'], predictions['prediction'])
+    return np.sqrt(np.mean((ground_truth['target'] - predictions['prediction'])**2))
 
 # 메인 UI
 st.title("📊 데이터 분석 경진대회 리더보드")
