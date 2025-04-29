@@ -52,6 +52,7 @@ def validate_submission(file):
 
 # 점수 계산
 def calculate_score(predictions, ground_truth):
+    print('aa')
     if len(predictions) != len(ground_truth):
         st.error("예측값과 정답의 크기가 일치하지 않습니다.")
         return None
