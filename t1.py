@@ -52,7 +52,7 @@ def validate_submission(file):
 
 # F1 점수 계산
 def calculate_score(predictions, ground_truth):
-    return mean_squared_error(ground_truth['target'].item(), predictions['prediction'].item())
+    return mean_squared_error(ground_truth['target'].values, predictions['prediction'].values)
 
 # CSV 파일에서 리더보드 데이터 읽기
 def load_leaderboard():
