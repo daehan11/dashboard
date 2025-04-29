@@ -9,6 +9,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import base64
 import io
+from sklearn.metrics import mean_squared_error, r2_score
 
 # 페이지 설정
 st.set_page_config(
@@ -51,7 +52,7 @@ def validate_submission(file):
 
 # F1 점수 계산
 def calculate_score(predictions, ground_truth):
-    return np.sqrt(np.mean((ground_truth['target'] - predictions['prediction'])**2))
+    return mean_squared_error(ground_truth['target'], predictions['prediction'])
 
 # CSV 파일에서 리더보드 데이터 읽기
 def load_leaderboard():
