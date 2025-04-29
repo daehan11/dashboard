@@ -35,7 +35,7 @@ ENV/
 .DS_Store
 Thumbs.db
 
-# Data files 
+# Data files
 app.py
 encode_true.py
 true.csv
