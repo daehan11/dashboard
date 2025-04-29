@@ -53,8 +53,8 @@ def validate_submission(file):
 # 점수 계산
 def calculate_score(predictions, ground_truth):
     if len(predictions) != len(ground_truth):
-        raise ValueError("예측값과 정답의 크기가 일치하지 않습니다.")
-    # return np.sqrt(mean_squared_error(ground_truth['target'], predictions['prediction']))
+        st.error("예측값과 정답의 크기가 일치하지 않습니다.")
+        return None
     return np.sqrt(mean_squared_error(ground_truth['target'], predictions['prediction']))
 
 # CSV 파일에서 리더보드 데이터 읽기
