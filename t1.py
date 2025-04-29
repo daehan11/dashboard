@@ -72,7 +72,7 @@ def save_submission(submission):
     df.to_csv('res.csv', index=False)
 
 # 메인 UI
-st.title("📊 데이터 분석 경진대회 리더보드")
+st.title("📊 9주차: 공기질 예측 대회 리더보드")
 
 # 사이드바 - 제출 섹션
 with st.sidebar:
