@@ -52,11 +52,10 @@ def validate_submission(file):
 
 # 점수 계산
 def calculate_score(predictions, ground_truth):
-    print('aa')
     if len(predictions) != len(ground_truth):
         st.error("예측값과 정답의 크기가 일치하지 않습니다.")
         return None
-    return np.sqrt(mean_squared_error(ground_truth['target'], predictions['prediction']))
+    return f1_score(ground_truth['target'], predictions['prediction'], average='binary')
 
 # CSV 파일에서 리더보드 데이터 읽기
 def load_leaderboard():
@@ -72,7 +71,7 @@ def save_submission(submission):
     df.to_csv('res.csv', index=False)
 
 # 메인 UI
-st.title("📊 9주차: 공기질 예측 대회 리더보드")
+st.title("📊 10주차: 오일 상태 분류 대회 리더보드")
 
 # 사이드바 - 제출 섹션
 with st.sidebar:
