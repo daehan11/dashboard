@@ -71,7 +71,7 @@ def save_submission(submission):
     df.to_csv('res.csv', index=False)
 
 # 메인 UI
-st.title("📊 10주차: 오일 상태 분류 대회 리더보드")
+st.title("📊 10주차: ㅇㅇ 대회 리더보드")
 
 # 사이드바 - 제출 섹션
 with st.sidebar:
