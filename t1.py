@@ -108,8 +108,8 @@ st.header("리더보드")
 df_leaderboard = load_leaderboard()
 
 if not df_leaderboard.empty:
-    # 점수 기준으로 오름차순 정렬
-    df_leaderboard = df_leaderboard.sort_values('score', ascending=True)
+    # 점수 기준으로 내림차순 정렬
+    df_leaderboard = df_leaderboard.sort_values('score', ascending=False)
     
     # 순위 추가
     df_leaderboard['순위'] = range(1, len(df_leaderboard) + 1)
