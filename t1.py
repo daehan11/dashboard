@@ -55,7 +55,7 @@ def calculate_score(predictions, ground_truth):
     if len(predictions) != len(ground_truth):
         st.error("예측값과 정답의 크기가 일치하지 않습니다.")
         return None
-    return f1_score(ground_truth['target'], predictions['prediction'], average='binary')
+    return f1_score(ground_truth['target'], predictions['prediction'], average='macro')
 
 # CSV 파일에서 리더보드 데이터 읽기
 def load_leaderboard():
