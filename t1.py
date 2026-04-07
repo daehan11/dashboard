@@ -13,7 +13,7 @@ from sklearn.metrics import mean_squared_error, r2_score
 
 # 페이지 설정
 st.set_page_config(
-    page_title="빅데이터 분석 리더보드",
+    page_title="Leaderboard",
     page_icon="📊",
     layout="wide"
 )
@@ -23,7 +23,7 @@ def load_ground_truth():
     try:
         # Streamlit Secrets에서 정답 데이터 로드
         if 'ground_truth_data' not in st.secrets:
-            st.error("정답 데이터가 설정되지 않았습니다.")
+            st.error("Target dataset is not loaded")
             return None
             
         # Base64로 인코딩된 데이터를 디코딩
@@ -33,11 +33,11 @@ def load_ground_truth():
         ground_truth = pd.read_csv(io.StringIO(decoded_data.decode('utf-8')))
         
         if 'target' not in ground_truth.columns:
-            st.error("정답 파일에 'target' 컬럼이 필요합니다.")
+            st.error("dataset does not contain target feature.")
             return None
         return ground_truth
     except Exception as e:
-        st.error(f"정답 데이터 로드 중 오류 발생: {str(e)}")
+        st.error(f"Error: load target dataset: {str(e)}")
         return None
 
 # 제출 파일 검증
@@ -45,15 +45,15 @@ def validate_submission(file):
     try:
         df = pd.read_csv(file)
         if 'prediction' not in df.columns:
-            return False, "제출 파일에 'prediction' 컬럼이 필요합니다."
+            return False, "'prediction', the column name, is needed in your file."
         return True, df
     except Exception as e:
-        return False, f"파일 로드 중 오류 발생: {str(e)}"
+        return False, f"Error: Load file: {str(e)}"
 
 # 점수 계산
 def calculate_score(predictions, ground_truth):
     if len(predictions) != len(ground_truth):
-        st.error("예측값과 정답의 크기가 일치하지 않습니다.")
+        st.error("Your file does not match the size of the target data.")
         return None
     return f1_score(ground_truth['target'], predictions['prediction'], average='macro')
 
@@ -71,19 +71,19 @@ def save_submission(submission):
     df.to_csv('res.csv', index=False)
 
 # 메인 UI
-st.title("📊 12주차: 리더보드")
+st.title("📊 Leaderboard")
 
 # 사이드바 - 제출 섹션
 with st.sidebar:
-    st.header("제출하기")
-    team_name = st.text_input("팀 이름")
-    submission_file = st.file_uploader("예측 결과 파일 업로드", type=['csv'])
+    st.header("Submit")
+    team_name = st.text_input("Team name")
+    submission_file = st.file_uploader("Upload your answer", type=['csv'])
     
-    if st.button("제출"):
+    if st.button("Submit"):
         if not team_name:
-            st.error("팀 이름을 입력해주세요.")
+            st.error("Please put your team name.")
         elif submission_file is None:
-            st.error("파일을 업로드해주세요.")
+            st.error("PLease upload your answer file.")
         else:
             is_valid, result = validate_submission(submission_file)
             if is_valid:
@@ -97,12 +97,12 @@ with st.sidebar:
                 }
                 
                 save_submission(submission)
-                st.success(f"제출 완료! 점수: {score:.4f}")
+                st.success(f"Submission Completed! Score: {score:.4f}")
             else:
                 st.error(result)
 
 # 메인 영역 - 리더보드
-st.header("리더보드")
+st.header("Leaderboard")
 
 # res.csv에서 데이터 읽기
 df_leaderboard = load_leaderboard()
@@ -112,22 +112,22 @@ if not df_leaderboard.empty:
     df_leaderboard = df_leaderboard.sort_values('score', ascending=False)
     
     # 순위 추가
-    df_leaderboard['순위'] = range(1, len(df_leaderboard) + 1)
+    df_leaderboard['Ranking'] = range(1, len(df_leaderboard) + 1)
     
     # 컬럼 이름 변경 및 재정렬
     df_display = df_leaderboard.rename(columns={
-        'team_name': '팀명',
-        'score': '점수',
-        'timestamp': '제출 시간'
-    })[['순위', '팀명', '점수', '제출 시간']]
+        'team_name': 'Team',
+        'score': 'Score',
+        'timestamp': 'Timestamp'
+    })[['Ranking', 'Team', 'Score', 'Timestamp']]
     
     # 점수를 소수점 4자리까지 표시
-    df_display['점수'] = df_display['점수'].apply(lambda x: f"{x:.4f}")
+    df_display['Score'] = df_display['Score'].apply(lambda x: f"{x:.4f}")
     
     st.dataframe(df_display, use_container_width=True)
     
     # 차트로 시각화
-    st.subheader("점수 분포")
+    st.subheader("Distribution")
     scores = df_leaderboard['score'].values
     
     fig, ax = plt.subplots(figsize=(8, 1))
@@ -137,4 +137,4 @@ if not df_leaderboard.empty:
     
     st.pyplot(fig)
 else:
-    st.info("아직 제출된 결과가 없습니다.")
+    st.info("No results have beed submitted yet.")
