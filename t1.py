@@ -102,7 +102,7 @@ with st.sidebar:
                 st.error(result)
 
 # 메인 영역 - 리더보드
-st.header("Rankings")
+# st.header("Rankings")
 
 # res.csv에서 데이터 읽기
 df_leaderboard = load_leaderboard()
