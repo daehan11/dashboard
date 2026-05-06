@@ -71,7 +71,7 @@ def save_submission(submission):
     df.to_csv('res.csv', index=False)
 
 # 메인 UI
-st.title("📊 Leaderboard: Week 7")
+st.title("📊 Leaderboard: Week 10")
 
 # 사이드바 - 제출 섹션
 with st.sidebar:
