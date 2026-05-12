@@ -121,7 +121,7 @@ if not df_leaderboard.empty:
         'team_name': 'Team',
         'score': 'Score',
         'timestamp': 'Timestamp'
-    })[['Ranking', 'Team', 'Score (QWK)', 'Timestamp']]
+    })[['Ranking', 'Team', 'Score', 'Timestamp']]
     
     # 점수를 소수점 4자리까지 표시
     df_display['Score'] = df_display['Score'].apply(lambda x: f"{x:.4f}")
