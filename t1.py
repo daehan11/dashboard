@@ -9,7 +9,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import base64
 import io
-from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.metrics import mean_squared_error, r2_score, cohen_kappa_score
 
 # 페이지 설정
 st.set_page_config(
@@ -55,7 +55,9 @@ def calculate_score(predictions, ground_truth):
     if len(predictions) != len(ground_truth):
         st.error("Your file does not match the size of the target data.")
         return None
-    return f1_score(ground_truth['target'], predictions['prediction'], average='macro')
+    # return f1_score(ground_truth['target'], predictions['prediction'], average='macro')
+    
+    return cohen_kappa_score(ground_truth['target'], predictions['prediction'], weights='quadratic')
 
 # CSV 파일에서 리더보드 데이터 읽기
 def load_leaderboard():
@@ -71,7 +73,7 @@ def save_submission(submission):
     df.to_csv('res.csv', index=False)
 
 # 메인 UI
-st.title("📊 Leaderboard: Week 10")
+st.title("📊 Leaderboard: Week 11")
 
 # 사이드바 - 제출 섹션
 with st.sidebar:
@@ -119,7 +121,7 @@ if not df_leaderboard.empty:
         'team_name': 'Team',
         'score': 'Score',
         'timestamp': 'Timestamp'
-    })[['Ranking', 'Team', 'Score', 'Timestamp']]
+    })[['Ranking', 'Team', 'Score (QWK)', 'Timestamp']]
     
     # 점수를 소수점 4자리까지 표시
     df_display['Score'] = df_display['Score'].apply(lambda x: f"{x:.4f}")
